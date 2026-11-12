@@ -97,11 +97,22 @@ html.is-loading body {
 .topbar .nav a,
 .topbar .nav button { font-size: clamp(16px, 1.56vw, 26px); }
 
+.topbar .nav a,
+.topbar .nav button {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-position: 100% 100%;
+    background-size: 0% 0.1em;
+    padding-bottom: 0.08em;
+    transition: background-size 320ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
 .topbar .nav a:hover,
-.topbar .nav button:hover {
-    text-decoration: underline;
-    text-decoration-thickness: 0.1em;
-    text-underline-offset: 0.16em;
+.topbar .nav button:hover,
+.topbar .nav a:focus-visible,
+.topbar .nav button:focus-visible {
+    background-position: 0 100%;
+    background-size: 100% 0.1em;
 }
 
 .drawing {
@@ -487,4 +498,13 @@ a,
     .mobile-card.alt h2 { color: var(--mobile-green); }
     .mobile-card.note { border-color: rgba(82, 109, 128, 0.2); }
     .mobile-card.note h2 { color: var(--mobile-blue); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .topbar .nav a,
+    .topbar .nav button,
+    .card h2 a,
+    .card h2 button,
+    .card h3 a,
+    .sketch-load { transition: none; }
 }

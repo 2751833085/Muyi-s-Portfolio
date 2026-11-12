@@ -240,11 +240,22 @@ h1 u::after {
     cursor: pointer;
 }
 
+.card h2 a,
+.card h2 button {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-position: 100% 100%;
+    background-size: 0% 0.1em;
+    padding-bottom: 0.08em;
+    transition: background-size 320ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
 .card h2 a:hover,
-.card h2 button:hover {
-    text-decoration: underline;
-    text-decoration-thickness: 0.1em;
-    text-underline-offset: 0.16em;
+.card h2 button:hover,
+.card h2 a:focus-visible,
+.card h2 button:focus-visible {
+    background-position: 0 100%;
+    background-size: 100% 0.1em;
 }
 
 .card iframe {
@@ -391,4 +402,13 @@ h1 u::after {
         transform: none;
         animation: none;
     }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .topbar .nav a,
+    .topbar .nav button,
+    .card h2 a,
+    .card h2 button,
+    .card h3 a,
+    .sketch-load { transition: none; }
 }
