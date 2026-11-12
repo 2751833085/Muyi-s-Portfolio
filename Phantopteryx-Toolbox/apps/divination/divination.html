@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="text-scale" content="scale">
   <title>Divination Demo</title>
   <style>
     * { box-sizing: border-box; }
@@ -35,7 +36,7 @@
     }
 
     body {
-      min-height: 100vh;
+      min-height: 100dvh;
       margin: 0;
       display: grid;
       place-items: center;
@@ -111,7 +112,7 @@
       gap: 10px;
     }
 
-    button {
+    :is(button, .button) {
       min-height: 46px;
       color: var(--ink);
       background: rgba(255,255,255,0.35);
@@ -122,16 +123,16 @@
       cursor: pointer;
     }
 
-    button:hover {
+    :is(button, .button):hover {
       background: #000;
       color: #fff;
     }
 
-    @media (max-width: 560px) {
+    @media (max-width: 35em) {
       body { padding: 14px; }
 
       main {
-        min-height: calc(100vh - 28px);
+        min-height: calc(100dvh - 28px);
         align-content: center;
       }
 
@@ -147,24 +148,37 @@
         animation: none;
       }
     }
+
+    .button {
+      display: grid;
+      place-items: center;
+      text-align: center;
+      text-decoration: none;
+    }
   </style>
+  <script src="../../../loading-particle.js"></script>
+  <script type="speculationrules">
+  {
+    "prefetch": [{
+      "where": {
+        "and": [
+          { "href_matches": "/*" },
+          { "not": { "selector_matches": "[target=_blank]" } }
+        ]
+      },
+      "eagerness": "moderate"
+    }]
+  }
+  </script>
 </head>
 <body>
-    <script>
-        (() => {
-            const script = document.createElement("script");
-            script.async = false;
-            script.src = "../../../loading-particle.js";
-            document.currentScript.replaceWith(script);
-        })();
-    </script>
   <main>
     <h1>Digital Divination Demo</h1>
     <p>This compact version preserves the interaction idea from the original toolbox without carrying the full astrology and I Ching engines inside the portfolio source.</p>
     <div class="reading" id="reading">Ask, then draw a message.</div>
     <div class="actions">
       <button id="draw" type="button">Draw Message</button>
-      <button type="button" data-route="../../toolbox.html">Back</button>
+      <a class="button" href="../../toolbox.html">Back</a>
     </div>
   </main>
   <script>

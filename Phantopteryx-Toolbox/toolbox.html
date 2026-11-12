@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="text-scale" content="scale">
   <title>Phantopteryx Toolbox</title>
   <style>
     * { box-sizing: border-box; }
@@ -37,7 +38,7 @@
     }
 
     body {
-      min-height: 100vh;
+      min-height: 100dvh;
       margin: 0;
       display: grid;
       place-items: center;
@@ -146,7 +147,7 @@
 
     .tool-link:hover span { color: #333; }
 
-    @media (max-width: 720px) {
+    @media (max-width: 45em) {
       body { padding: 14px; }
 
       main {
@@ -175,16 +176,22 @@
       }
     }
   </style>
+  <script src="../loading-particle.js"></script>
+  <script type="speculationrules">
+  {
+    "prefetch": [{
+      "where": {
+        "and": [
+          { "href_matches": "/*" },
+          { "not": { "selector_matches": "[target=_blank]" } }
+        ]
+      },
+      "eagerness": "moderate"
+    }]
+  }
+  </script>
 </head>
 <body>
-    <script>
-        (() => {
-            const script = document.createElement("script");
-            script.async = false;
-            script.src = "../loading-particle.js";
-            document.currentScript.replaceWith(script);
-        })();
-    </script>
   <main>
     <section class="intro">
       <span class="eyebrow">Community tool prototype</span>
@@ -192,9 +199,9 @@
       <p>Old community-tool prototype, preserved as a compact portfolio demo. The original research version combined image editing, divination, and optional AI services; this cleaned version keeps the public-facing navigation without carrying the experimental implementation as source noise.</p>
     </section>
     <nav aria-label="Toolbox demos">
-      <button class="tool-link" type="button" data-route="apps/image-editor/index.html">Image Editor Demo<span>Brightness, contrast, saturation</span></button>
-      <button class="tool-link" type="button" data-route="apps/divination/divination.html">Divination Demo<span>Draw a compact message</span></button>
-      <button class="tool-link" type="button" data-route="../Advanced CC Pages/Community Tool/community-tool.html">Back to Project Page<span>Advanced CC archive</span></button>
+      <a class="tool-link" href="apps/image-editor/index.html">Image Editor Demo<span>Brightness, contrast, saturation</span></a>
+      <a class="tool-link" href="apps/divination/divination.html">Divination Demo<span>Draw a compact message</span></a>
+      <a class="tool-link" href="../Advanced%20CC%20Pages/Community%20Tool/community-tool.html">Back to Project Page<span>Advanced CC archive</span></a>
     </nav>
   </main>
   <script>
@@ -217,11 +224,6 @@
       });
     })();
 
-    document.querySelectorAll("[data-route]").forEach(control => {
-      control.addEventListener("click", () => {
-        location.href = control.dataset.route;
-      });
-    });
   </script>
 </body>
 </html>

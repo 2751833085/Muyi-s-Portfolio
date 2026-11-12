@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="text-scale" content="scale">
   <title>Image Editor Demo</title>
   <style>
     * { box-sizing: border-box; }
@@ -37,7 +38,7 @@
     }
 
     body {
-      min-height: 100vh;
+      min-height: 100dvh;
       margin: 0;
       display: grid;
       grid-template-columns: minmax(18rem, 24rem) 1fr;
@@ -121,7 +122,7 @@
       gap: 10px;
     }
 
-    button {
+    :is(button, .button) {
       min-height: 44px;
       color: var(--text);
       background: #141414;
@@ -132,7 +133,7 @@
       font: inherit;
     }
 
-    button:hover {
+    :is(button, .button):hover {
       background: var(--accent);
       color: #000;
     }
@@ -173,7 +174,7 @@
       text-align: center;
     }
 
-    @media (max-width: 760px) {
+    @media (max-width: 47.5em) {
       body {
         grid-template-columns: 1fr;
       }
@@ -204,17 +205,30 @@
         animation: none;
       }
     }
+
+    .button {
+      display: grid;
+      place-items: center;
+      text-align: center;
+      text-decoration: none;
+    }
   </style>
+  <script src="../../../loading-particle.js"></script>
+  <script type="speculationrules">
+  {
+    "prefetch": [{
+      "where": {
+        "and": [
+          { "href_matches": "/*" },
+          { "not": { "selector_matches": "[target=_blank]" } }
+        ]
+      },
+      "eagerness": "moderate"
+    }]
+  }
+  </script>
 </head>
 <body>
-    <script>
-        (() => {
-            const script = document.createElement("script");
-            script.async = false;
-            script.src = "../../../loading-particle.js";
-            document.currentScript.replaceWith(script);
-        })();
-    </script>
   <aside>
     <h1>Image Editor Demo</h1>
     <p class="hint">Open an image and test a compact set of browser-native adjustments.</p>
@@ -226,7 +240,7 @@
     </div>
     <div class="actions">
       <button id="reset" type="button">Reset</button>
-      <button type="button" data-route="../../toolbox.html">Back</button>
+      <a class="button" href="../../toolbox.html">Back</a>
     </div>
   </aside>
   <main>

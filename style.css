@@ -34,6 +34,8 @@ body {
     position: relative;
     margin: 0;
     font-family: 'Bradley Hand', cursive;
+    font-size-adjust: from-font;
+    overflow-wrap: anywhere;
     background: transparent;
     color: #4a4a4a;
 }
@@ -84,7 +86,7 @@ html.is-loading body {
     cursor: pointer;
 }
 
-.topbar .brand { font-size: clamp(22px, 2.15vw, 36px); }
+.topbar .brand { font-size: clamp(1.375rem, 2.15vw, 2.25rem); }
 
 .topbar .nav {
     display: flex;
@@ -95,7 +97,7 @@ html.is-loading body {
 }
 
 .topbar .nav a,
-.topbar .nav button { font-size: clamp(16px, 1.56vw, 26px); }
+.topbar .nav button { font-size: clamp(1rem, 1.56vw, 1.625rem); }
 
 .topbar .nav a,
 .topbar .nav button {
@@ -107,6 +109,7 @@ html.is-loading body {
     transition: background-size 320ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
+.topbar .nav a[aria-current="page"],
 .topbar .nav a:hover,
 .topbar .nav button:hover,
 .topbar .nav a:focus-visible,
@@ -115,8 +118,11 @@ html.is-loading body {
     background-size: 100% 0.1em;
 }
 
+.hero-art { display: contents; }
+
 .drawing {
     position: relative;
+    height: auto;
     z-index: 1;
     display: block;
     width: 100%;
@@ -159,7 +165,7 @@ html.is-loading .quick-entry {
 h1 {
     margin: 0 0 2vw 0;
     color: #8B4513;
-    font-size: 5vw;
+    font-size: clamp(2.4rem, 5vw, 6rem);
     line-height: 1;
     font-weight: 700;
 }
@@ -173,11 +179,10 @@ h1 {
 p {
     margin: 0 0 1.2vw 0;
     color: #4a4a4a;
-    font-size: 1.5vw;
+    font-size: clamp(0.72rem, 1.5vw, 1.8rem);
     line-height: 1.4;
 }
 
-a,
 .text-route {
     display: block;
     margin: 0 0 1.2vw 0;
@@ -186,7 +191,7 @@ a,
     background: none;
     color: #8B4513;
     font: inherit;
-    font-size: 3vw;
+    font-size: clamp(1.44rem, 3vw, 3.6rem);
     line-height: normal;
     text-align: left;
     text-decoration: none;
@@ -194,21 +199,21 @@ a,
 }
 
 .text2 a,
-.text2 .text-route { font-size: 3vw; }
+.text2 .text-route { font-size: clamp(1.44rem, 3vw, 3.6rem); }
 .text2 p,
-.text3 p { font-size: 1.3vw; }
+.text3 p { font-size: clamp(0.624rem, 1.3vw, 1.56rem); }
 
 .title {
     display: block;
     margin: 0 0 1.2vw 0;
     color: #8B4513;
-    font-size: 3vw;
+    font-size: clamp(1.44rem, 3vw, 3.6rem);
     line-height: 1.1;
 }
 
 .about-link {
     margin-top: 1.5vw;
-    font-size: 1.7vw;
+    font-size: clamp(0.816rem, 1.7vw, 2.04rem);
 }
 
 .text-route u,
@@ -265,11 +270,11 @@ a,
     display: block;
     margin: 0 0 0.7vw 0;
     color: #4a4a4a;
-    font-size: 1.05vw;
+    font-size: clamp(0.504rem, 1.05vw, 1.26rem);
     line-height: 1.2;
 }
 
-.quick-entry button {
+.quick-entry a {
     display: block;
     margin: 0 0 0.75vw 0;
     padding: 0;
@@ -277,7 +282,7 @@ a,
     background: none;
     color: #8B4513;
     font: inherit;
-    font-size: 1.85vw;
+    font-size: clamp(0.888rem, 1.85vw, 2.22rem);
     line-height: 1.05;
     text-align: left;
     cursor: pointer;
@@ -311,7 +316,7 @@ a,
     .topbar { transform: translateX(-50%); }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 47.5em) {
     :root {
         --mobile-ink: #2f2b27;
         --mobile-muted: #6d655d;
@@ -335,7 +340,7 @@ a,
 
     .mobile-home {
         display: block;
-        min-height: 100vh;
+        min-height: 100dvh;
         padding: 14px 14px 32px;
         color: var(--mobile-ink);
         opacity: 0;
@@ -370,7 +375,7 @@ a,
     .mobile-brand {
         margin: 0;
         color: var(--mobile-rust);
-        font-size: 24px;
+        font-size: 1.5rem;
         line-height: 1;
         white-space: nowrap;
     }
@@ -385,7 +390,7 @@ a,
 
     .mobile-bar span {
         color: var(--mobile-muted);
-        font-size: 11px;
+        font-size: 0.6875rem;
         line-height: 1;
     }
 
@@ -417,7 +422,7 @@ a,
     .mobile-home h1 {
         margin: 0;
         color: var(--mobile-rust);
-        font-size: clamp(60px, 18vw, 92px);
+        font-size: clamp(3.75rem, 18vw, 5.75rem);
         line-height: 0.86;
     }
 
@@ -430,14 +435,14 @@ a,
     .mobile-home p {
         margin: 0;
         color: var(--mobile-muted);
-        font-size: 17px;
+        font-size: 1.0625rem;
         line-height: 1.42;
     }
 
     .mobile-kicker,
     .mobile-eyebrow {
         color: var(--mobile-blue);
-        font-size: 11px;
+        font-size: 0.6875rem;
         line-height: 1.2;
     }
 
@@ -460,7 +465,7 @@ a,
         background: rgba(255, 255, 255, 0.36);
         color: var(--mobile-rust);
         font: inherit;
-        font-size: 24px;
+        font-size: 1.5rem;
         line-height: 1;
         text-align: left;
         text-decoration: none;
@@ -471,14 +476,14 @@ a,
         display: block;
         margin-top: 5px;
         color: var(--mobile-muted);
-        font-size: 10px;
+        font-size: 0.625rem;
         line-height: 1.2;
     }
 
     .mobile-link::after {
         content: "->";
         color: currentColor;
-        font-size: 20px;
+        font-size: 1.25rem;
     }
 
     .mobile-card {
@@ -490,15 +495,21 @@ a,
     .mobile-card h2 {
         margin: 0;
         color: var(--mobile-rust);
-        font-size: 34px;
+        font-size: 2.125rem;
         line-height: 1;
     }
 
-    .mobile-card p { font-size: 16px; }
+    .mobile-card p { font-size: 1rem; }
     .mobile-card.alt h2 { color: var(--mobile-green); }
     .mobile-card.note { border-color: rgba(82, 109, 128, 0.2); }
     .mobile-card.note h2 { color: var(--mobile-blue); }
 }
+
+h1,
+h2,
+h3 { text-wrap: balance; }
+
+p { text-wrap: pretty; }
 
 @media (prefers-reduced-motion: reduce) {
     .topbar .nav a,

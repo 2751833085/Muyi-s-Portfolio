@@ -35,11 +35,13 @@ A hand-drawn style portfolio site collecting my **Critical Computation** coursew
 
 ## Features
 
-- **Loading animation only when it matters.** The lemniscate particle loader plays when you enter the site or refresh a page. Moving between pages inside the site is a quick cross-fade instead.
+- **Loading animation only when it matters.** The lemniscate particle loader plays when you enter the site or refresh a page. Moving between pages inside the site uses native cross-document view transitions, with a short fade as the fallback.
+- **Fast navigation.** Internal links are real `<a>` elements, prefetched with speculation rules when you hover them. The hero artwork ships as WebP with a PNG fallback and is skipped entirely on the mobile layout.
+- **Accessible by default.** Landmarks, `aria-current` on the active nav item, `rem`-based type that follows browser and OS text-size settings, and no horizontal overflow at 150% text.
 - **Animated hover underlines.** Navigation links and card titles draw their underline in from the left on hover or keyboard focus, and slide it out to the right on leave.
 - **Click-to-load sketches.** P5.js sketches stay unloaded until you ask for them, so pages with many sketches open fast.
 - **Desktop and mobile layouts.** The home page switches to a compact card layout on small screens.
-- **Respects reduced motion.** Underline transitions are disabled when the system asks for less motion.
+- **Respects reduced motion.** Page transitions, underline animations and the loader's breathing motion are disabled when the system asks for less motion.
 
 ## Project structure
 
@@ -67,7 +69,7 @@ Then open <http://localhost:8000>.
 
 ## Built with
 
-HTML · CSS · JavaScript · [p5.js](https://p5js.org/)
+HTML · CSS · JavaScript · [p5.js](https://p5js.org/), following [Modern Web Guidance 1.0](https://developer.chrome.com/docs/modern-web-guidance)
 
 ## Acknowledgements
 

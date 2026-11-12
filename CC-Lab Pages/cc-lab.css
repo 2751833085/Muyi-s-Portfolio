@@ -44,11 +44,13 @@ html.is-loading::after {
 }
 
 body {
-    min-height: 100vh;
+    min-height: 100dvh;
     margin: 0;
     padding: clamp(28px, 4vw, 68px);
     color: var(--ink);
     font-family: 'Bradley Hand', cursive;
+    font-size-adjust: from-font;
+    overflow-wrap: anywhere;
     background: transparent;
     opacity: 0;
     transform: translateY(18px);
@@ -69,6 +71,7 @@ html.is-loading body {
 }
 
 .back {
+    text-decoration: none;
     position: sticky;
     top: 18px;
     z-index: 5;
@@ -84,7 +87,7 @@ html.is-loading body {
     box-shadow: 0 8px 28px rgba(80, 50, 22, 0.1);
     backdrop-filter: blur(8px);
     font: inherit;
-    font-size: clamp(18px, 1.45vw, 27px);
+    font-size: clamp(1.125rem, 1.45vw, 1.6875rem);
     line-height: 1;
     cursor: pointer;
 }
@@ -93,7 +96,7 @@ h1 {
     max-width: 12ch;
     margin: 0 0 clamp(24px, 3vw, 54px);
     color: var(--brown);
-    font-size: clamp(58px, 6.2vw, 124px);
+    font-size: clamp(3.625rem, 6.2vw, 7.75rem);
     line-height: 0.92;
 }
 
@@ -151,7 +154,7 @@ h1 u::after {
     max-width: 62ch;
     margin: -1vw 0 clamp(26px, 3vw, 52px);
     color: var(--muted);
-    font-size: clamp(20px, 1.55vw, 30px);
+    font-size: clamp(1.25rem, 1.55vw, 1.875rem);
     line-height: 1.4;
 }
 
@@ -194,14 +197,14 @@ h1 u::after {
 .logic-card h2 {
     margin: 0;
     color: var(--brown);
-    font-size: clamp(30px, 2.6vw, 54px);
+    font-size: clamp(1.875rem, 2.6vw, 3.375rem);
     line-height: 1;
 }
 
 .card h3 {
     margin: 0;
     color: var(--brown);
-    font-size: clamp(24px, 1.8vw, 38px);
+    font-size: clamp(1.5rem, 1.8vw, 2.375rem);
     line-height: 1;
 }
 
@@ -212,7 +215,7 @@ h1 u::after {
 .placeholder {
     margin: 0;
     color: var(--muted);
-    font-size: clamp(17px, 1.2vw, 24px);
+    font-size: clamp(1.0625rem, 1.2vw, 1.5rem);
     line-height: 1.42;
 }
 
@@ -300,7 +303,7 @@ h1 u::after {
         linear-gradient(135deg, rgba(255, 252, 242, 0.92), rgba(246, 234, 205, 0.78)),
         rgba(255, 252, 242, 0.84);
     font: inherit;
-    font-size: clamp(26px, 2.3vw, 46px);
+    font-size: clamp(1.625rem, 2.3vw, 2.875rem);
     line-height: 1;
     text-align: center;
     cursor: pointer;
@@ -336,7 +339,7 @@ h1 u::after {
     color: #fff8e8;
     background: var(--brown);
     font: inherit;
-    font-size: clamp(18px, 1.25vw, 25px);
+    font-size: clamp(1.125rem, 1.25vw, 1.5625rem);
     line-height: 1;
     text-decoration: none;
     cursor: pointer;
@@ -359,7 +362,7 @@ h1 u::after {
 .preview figcaption {
     margin-top: 10px;
     color: var(--muted);
-    font-size: clamp(14px, 1vw, 19px);
+    font-size: clamp(0.875rem, 1vw, 1.1875rem);
     line-height: 1.35;
 }
 
@@ -375,10 +378,10 @@ h1 u::after {
 
 .logic-card h2 {
     color: var(--blue);
-    font-size: clamp(24px, 1.8vw, 38px);
+    font-size: clamp(1.5rem, 1.8vw, 2.375rem);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 56.25em) {
     html {
         background-size: 165% auto;
     }
@@ -392,18 +395,18 @@ h1 u::after {
         width: 100%;
         justify-content: center;
         margin-bottom: 18px;
-        font-size: 21px;
+        font-size: 1.3125rem;
     }
 
     h1 {
         max-width: none;
         margin: 22px 0 18px;
-        font-size: clamp(54px, 15vw, 86px);
+        font-size: clamp(3.375rem, 15vw, 5.375rem);
     }
 
     .intro {
         margin: 0 0 16px;
-        font-size: 20px;
+        font-size: 1.25rem;
     }
 
     .grid,
@@ -423,11 +426,11 @@ h1 u::after {
 
     .card h2,
     .logic-card h2 {
-        font-size: 32px;
+        font-size: 2rem;
     }
 
     .card h3 {
-        font-size: 25px;
+        font-size: 1.5625rem;
     }
 
     .card p,
@@ -435,7 +438,7 @@ h1 u::after {
     .toolbox-copy,
     .project-copy,
     .placeholder {
-        font-size: 17px;
+        font-size: 1.0625rem;
     }
 
     .sketch-shell {
@@ -444,7 +447,7 @@ h1 u::after {
 
     .launch-btn {
         width: 100%;
-        font-size: 20px;
+        font-size: 1.25rem;
     }
 
     .preview img {
@@ -459,6 +462,12 @@ h1 u::after {
         animation: none;
     }
 }
+
+h1,
+h2,
+h3 { text-wrap: balance; }
+
+p { text-wrap: pretty; }
 
 @media (prefers-reduced-motion: reduce) {
     .topbar .nav a,

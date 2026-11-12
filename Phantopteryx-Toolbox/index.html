@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Phantopteryx Toolbox</title>
+  <meta name="text-scale" content="scale">
+  <title>Opening Phantopteryx Toolbox</title>
   <style>
     body {
-      min-height: 100vh;
+      min-height: 100dvh;
       margin: 0;
       display: grid;
       place-items: center;
@@ -43,7 +44,7 @@
     animation: none;
 }
 
-    button {
+    :is(button, .button) {
       color: inherit;
       background: transparent;
       border: 1px solid #333;
@@ -57,7 +58,7 @@
       animation: toolIn 520ms ease-out forwards;
     }
 
-    html.is-loading button {
+    html.is-loading :is(button, .button) {
       visibility: hidden;
       opacity: 0;
       animation: none;
@@ -67,25 +68,34 @@
       from { opacity: 0; transform: translateY(12px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    .button {
+      display: grid;
+      place-items: center;
+      text-align: center;
+      text-decoration: none;
+    }
   </style>
+  <script src="../loading-particle.js"></script>
+  <script type="speculationrules">
+  {
+    "prefetch": [{
+      "where": {
+        "and": [
+          { "href_matches": "/*" },
+          { "not": { "selector_matches": "[target=_blank]" } }
+        ]
+      },
+      "eagerness": "moderate"
+    }]
+  }
+  </script>
 </head>
 <body>
-    <script>
-        (() => {
-            const script = document.createElement("script");
-            script.async = false;
-            script.src = "../loading-particle.js";
-            document.currentScript.replaceWith(script);
-        })();
-    </script>
-  <button type="button" data-route="toolbox.html">Open Phantopteryx Toolbox</button>
+  <main><a class="button" href="toolbox.html">Open Phantopteryx Toolbox</a></main>
   <script>
     const root = document.documentElement;
-    const control = document.querySelector("[data-route]");
-    const target = control.dataset.route;
-    control.addEventListener("click", () => {
-      location.href = target;
-    });
+    const target = document.querySelector("main a[href]").getAttribute("href");
     const pageReady = document.readyState === "complete" ? Promise.resolve() : new Promise(resolve => window.addEventListener("load", resolve, { once: true }));
     const minimumHold = new Promise(resolve => setTimeout(resolve, 1200));
     Promise.all([pageReady, minimumHold]).then(() => {

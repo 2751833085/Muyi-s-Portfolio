@@ -28,14 +28,13 @@
 
   const settleDurationMs = 1100;
   const fadeDurationMs = 900;
-  const routeFadeOutMs = 220;
   const routeFadeInMs = 420;
   const routeFlagKey = "portfolio:route-transition";
-  const darkBackground = "#050505";
-  const lightBackground = "#f1ead8";
 
   // The full loading animation only plays when the site is entered fresh or
-  // the page is refreshed. Navigation inside the site just cross-fades.
+  // the page is refreshed. Navigation inside the site is a cross-document view
+  // transition (see @view-transition below), with a short fade as the fallback
+  // in browsers that do not support it.
   const consumeRouteFlag = () => {
     try {
       const value = sessionStorage.getItem(routeFlagKey);
@@ -67,12 +66,20 @@
   const useDirectTransition =
     navigationType !== "reload" &&
     (routedInternally || navigationType === "back_forward" || cameFromSameSite());
+  const supportsCrossDocumentTransitions = "onpagereveal" in window;
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const styleId = "lemniscate-loading-style";
   if (!document.getElementById(styleId)) {
     const style = document.createElement("style");
     style.id = styleId;
     style.textContent = `
+      @media (prefers-reduced-motion: no-preference) {
+        @view-transition {
+          navigation: auto;
+        }
+      }
+
       html.is-loading::after {
         content: none !important;
       }
@@ -177,22 +184,8 @@
         z-index: 10001;
         display: block;
         background: ${theme.background};
-        opacity: 1;
-        pointer-events: auto;
-      }
-
-      .loading-route-mask.is-leaving {
-        animation: routeMaskIn ${routeFadeOutMs}ms ease both;
-      }
-
-      .loading-route-mask.is-arriving {
         pointer-events: none;
         animation: loadingMaskOut ${routeFadeInMs}ms ease both;
-      }
-
-      @keyframes routeMaskIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
       }
 
       .loading-particle__frame {
@@ -200,7 +193,13 @@
       }
 
       .loading-particle.is-active .loading-particle__frame {
-        animation: loaderParticleIn 520ms ease forwards, lemniscateBreath 5000ms ease-in-out infinite;
+        animation: loaderParticleIn 520ms ease forwards;
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        .loading-particle.is-active .loading-particle__frame {
+          animation: loaderParticleIn 520ms ease forwards, lemniscateBreath 5000ms ease-in-out infinite;
+        }
       }
 
       .loading-particle.is-exiting {
@@ -314,117 +313,55 @@
     return loader;
   };
 
-  const createRouteMask = (modifier, background) => {
-    const mask = document.createElement("div");
-    mask.className = `loading-route-mask ${modifier}`;
-    mask.setAttribute("aria-hidden", "true");
-    if (background) {
-      mask.style.background = background;
-    }
-    document.body.prepend(mask);
-    return mask;
-  };
-
-  const backgroundFor = (target) => {
-    try {
-      return new URL(target, location.href).pathname.includes("Phantopteryx-Toolbox")
-        ? darkBackground
-        : lightBackground;
-    } catch (error) {
-      return theme.background;
-    }
-  };
-
-  let isRouting = false;
-
-  const startRouteTransition = (target) => {
-    if (!target || target === "#" || isRouting) {
+  // Remember that the next page was reached from inside the site. The referrer
+  // covers this on a server; the flag keeps it working from file:// too.
+  document.addEventListener("click", (event) => {
+    const link = event.target.closest?.("a[href]");
+    if (!link || link.target === "_blank" || link.origin !== location.origin) {
       return;
     }
-
-    isRouting = true;
+    if (link.pathname === location.pathname && link.search === location.search) {
+      return;
+    }
     try {
       sessionStorage.setItem(routeFlagKey, "1");
     } catch (error) {
       // Storage unavailable: the next page falls back to the referrer check.
     }
-    document.querySelectorAll(".loading-route-mask").forEach((mask) => mask.remove());
-    createRouteMask("is-leaving", backgroundFor(target));
-    window.setTimeout(() => {
-      location.href = target;
-    }, routeFadeOutMs + 20);
-  };
-
-  // A page restored from the back/forward cache still carries the mask it
-  // left with; clear it so the page is usable again.
-  window.addEventListener("pageshow", (event) => {
-    if (!event.persisted) {
-      return;
-    }
-    isRouting = false;
-    try {
-      sessionStorage.removeItem(routeFlagKey);
-    } catch (error) {
-      // Nothing to clear.
-    }
-    document.querySelectorAll(".loading-route-mask").forEach((mask) => mask.remove());
   });
 
-  const revealDeferredMedia = () => {
-    document.querySelectorAll("[data-src]").forEach((node) => {
-      if (node.getAttribute("src") !== node.dataset.src) {
-        node.src = node.dataset.src;
-      }
-    });
-  };
-
-  const mountDirect = () => {
-    const mask = createRouteMask("is-arriving");
-    root.classList.remove("is-loading");
-    root.classList.add("is-ready", "is-revealed");
-    window.finishLoadingScreen = () => {};
+  const fadeIn = () => {
+    const mask = document.createElement("div");
+    mask.className = "loading-route-mask";
+    mask.setAttribute("aria-hidden", "true");
+    document.body.prepend(mask);
     const removeMask = () => mask.remove();
     mask.addEventListener("animationend", removeMask, { once: true });
     window.setTimeout(removeMask, routeFadeInMs + 200);
+  };
 
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", revealDeferredMedia, { once: true });
+  const whenBodyExists = (callback) => {
+    if (document.body) {
+      callback();
     } else {
-      revealDeferredMedia();
+      document.addEventListener("DOMContentLoaded", callback, { once: true });
     }
   };
 
-  window.startRouteTransition = startRouteTransition;
+  // Runs before first paint (this script is loaded from <head>), so the view
+  // transition captures the page in its revealed state.
+  const mountDirect = () => {
+    root.classList.remove("is-loading");
+    root.classList.add("is-ready", "is-revealed");
+    window.finishLoadingScreen = () => {};
 
-  document.addEventListener(
-    "click",
-    (event) => {
-      const control = event.target.closest("[data-route]");
-      if (!control) {
-        return;
-      }
-
-      const target = control.dataset.route;
-      if (!target || target === "#") {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        return;
-      }
-
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      startRouteTransition(target);
-    },
-    true
-  );
+    if (!supportsCrossDocumentTransitions && !prefersReducedMotion) {
+      whenBodyExists(fadeIn);
+    }
+  };
 
   const mount = () => {
     if (!root.classList.contains("is-loading") || document.querySelector(".loading-particle")) {
-      return;
-    }
-
-    if (useDirectTransition) {
-      mountDirect();
       return;
     }
 
@@ -465,9 +402,9 @@
     }
   };
 
-  if (document.body) {
-    mount();
+  if (useDirectTransition) {
+    mountDirect();
   } else {
-    document.addEventListener("DOMContentLoaded", mount, { once: true });
+    whenBodyExists(mount);
   }
 })();
