@@ -28,6 +28,45 @@
 
   const settleDurationMs = 1100;
   const fadeDurationMs = 900;
+  const routeFadeOutMs = 220;
+  const routeFadeInMs = 420;
+  const routeFlagKey = "portfolio:route-transition";
+  const darkBackground = "#050505";
+  const lightBackground = "#f1ead8";
+
+  // The full loading animation only plays when the site is entered fresh or
+  // the page is refreshed. Navigation inside the site just cross-fades.
+  const consumeRouteFlag = () => {
+    try {
+      const value = sessionStorage.getItem(routeFlagKey);
+      sessionStorage.removeItem(routeFlagKey);
+      return value === "1";
+    } catch (error) {
+      return false;
+    }
+  };
+
+  const cameFromSameSite = () => {
+    try {
+      return Boolean(document.referrer) && new URL(document.referrer).origin === location.origin;
+    } catch (error) {
+      return false;
+    }
+  };
+
+  const navigationType = (() => {
+    try {
+      const entry = performance.getEntriesByType("navigation")[0];
+      return entry ? entry.type : "navigate";
+    } catch (error) {
+      return "navigate";
+    }
+  })();
+
+  const routedInternally = consumeRouteFlag();
+  const useDirectTransition =
+    navigationType !== "reload" &&
+    (routedInternally || navigationType === "back_forward" || cameFromSameSite());
 
   const styleId = "lemniscate-loading-style";
   if (!document.getElementById(styleId)) {
@@ -140,6 +179,20 @@
         background: ${theme.background};
         opacity: 1;
         pointer-events: auto;
+      }
+
+      .loading-route-mask.is-leaving {
+        animation: routeMaskIn ${routeFadeOutMs}ms ease both;
+      }
+
+      .loading-route-mask.is-arriving {
+        pointer-events: none;
+        animation: loadingMaskOut ${routeFadeInMs}ms ease both;
+      }
+
+      @keyframes routeMaskIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
       }
 
       .loading-particle__frame {
@@ -261,12 +314,25 @@
     return loader;
   };
 
-  const createRouteMask = () => {
+  const createRouteMask = (modifier, background) => {
     const mask = document.createElement("div");
-    mask.className = "loading-route-mask";
+    mask.className = `loading-route-mask ${modifier}`;
     mask.setAttribute("aria-hidden", "true");
+    if (background) {
+      mask.style.background = background;
+    }
     document.body.prepend(mask);
     return mask;
+  };
+
+  const backgroundFor = (target) => {
+    try {
+      return new URL(target, location.href).pathname.includes("Phantopteryx-Toolbox")
+        ? darkBackground
+        : lightBackground;
+    } catch (error) {
+      return theme.background;
+    }
   };
 
   let isRouting = false;
@@ -277,14 +343,55 @@
     }
 
     isRouting = true;
-    document.querySelector(".loading-route-mask") || createRouteMask();
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        window.setTimeout(() => {
-          location.href = target;
-        }, 120);
-      });
+    try {
+      sessionStorage.setItem(routeFlagKey, "1");
+    } catch (error) {
+      // Storage unavailable: the next page falls back to the referrer check.
+    }
+    document.querySelectorAll(".loading-route-mask").forEach((mask) => mask.remove());
+    createRouteMask("is-leaving", backgroundFor(target));
+    window.setTimeout(() => {
+      location.href = target;
+    }, routeFadeOutMs + 20);
+  };
+
+  // A page restored from the back/forward cache still carries the mask it
+  // left with; clear it so the page is usable again.
+  window.addEventListener("pageshow", (event) => {
+    if (!event.persisted) {
+      return;
+    }
+    isRouting = false;
+    try {
+      sessionStorage.removeItem(routeFlagKey);
+    } catch (error) {
+      // Nothing to clear.
+    }
+    document.querySelectorAll(".loading-route-mask").forEach((mask) => mask.remove());
+  });
+
+  const revealDeferredMedia = () => {
+    document.querySelectorAll("[data-src]").forEach((node) => {
+      if (node.getAttribute("src") !== node.dataset.src) {
+        node.src = node.dataset.src;
+      }
     });
+  };
+
+  const mountDirect = () => {
+    const mask = createRouteMask("is-arriving");
+    root.classList.remove("is-loading");
+    root.classList.add("is-ready", "is-revealed");
+    window.finishLoadingScreen = () => {};
+    const removeMask = () => mask.remove();
+    mask.addEventListener("animationend", removeMask, { once: true });
+    window.setTimeout(removeMask, routeFadeInMs + 200);
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", revealDeferredMedia, { once: true });
+    } else {
+      revealDeferredMedia();
+    }
   };
 
   window.startRouteTransition = startRouteTransition;
@@ -313,6 +420,11 @@
 
   const mount = () => {
     if (!root.classList.contains("is-loading") || document.querySelector(".loading-particle")) {
+      return;
+    }
+
+    if (useDirectTransition) {
+      mountDirect();
       return;
     }
 
